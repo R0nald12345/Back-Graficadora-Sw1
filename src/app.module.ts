@@ -10,22 +10,26 @@ import { ElementoModule } from './elemento/elemento.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import {typeOrmConfig} from './config/typeorm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
+    //forRoot Se utliza en el modulo principal de la aplicacion manera general
+    //forFeature en modulos Internos
+    ConfigModule.forRoot({ 
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       useFactory:typeOrmConfig,
-      inject:[ConfigService],
+      inject:[ConfigService], //me permite agregar el inyectar osea acceder al archivo de typeOrmConfig
     }),
     UsuarioModule,
     ProyectoModule,
     InvitacionModule,
     UsuarioProyectoModule,
     CanvaModule,
-    ElementoModule
+    ElementoModule,
+    AuthModule
 
   ],
   controllers: [AppController],

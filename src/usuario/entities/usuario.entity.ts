@@ -1,5 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { UsuarioProyecto } from "src/usuario-proyecto/entities/usuario-proyecto.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
+
+//estamos usando la forma de Datamaper
 @Entity()
 export class Usuario{
     @PrimaryGeneratedColumn()
@@ -14,9 +17,12 @@ export class Usuario{
     @Column()
     nombre:string;
 
-    // @OneToMany(()=>UsuarioProyecto,  usuarioProyecto => usuarioProyecto.usuario )
-    // usuarioProyectos: UsuarioProyecto[];
+    @OneToMany( 
+        ()=> UsuarioProyecto, 
+        usuarioProyecto => usuarioProyecto.usuario
+    )
+    usuarioProyectos: UsuarioProyecto[]
 
-    // @OneToMany( ()=>Invitacion, invitacion => invitacion.usuario)
-    // invitaciones: Invitacion[];
+    
+    
 }
