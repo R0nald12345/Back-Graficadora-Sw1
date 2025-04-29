@@ -12,17 +12,13 @@ export class Proyecto {
     @Column({ type: 'text', nullable: true })
     descripcion: string;
   
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    creado: Date;
-  
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
-    actualizado: Date;
 
+    // Relación con UsuarioProyecto
     @OneToMany(
         ()=>UsuarioProyecto,
-        UsuarioProyecto => UsuarioProyecto.proyecto
+        usuarioProyecto => usuarioProyecto.proyecto
     )
     usuarioProyectos:UsuarioProyecto[];
 
-    // @OneToMany(()=> UsuarioProyecto,   )
+
 }

@@ -1,39 +1,71 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { ProyectoService } from './proyecto.service';
 import { CreateProyectoDto } from './dto/create-proyecto.dto';
 import { UpdateProyectoDto } from './dto/update-proyecto.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+
 
 @Controller('proyecto')
+@UseGuards(JwtAuthGuard) // Protege todas las rutas
 export class ProyectoController {
-  constructor(
-    private readonly proyectoService: ProyectoService
+  constructor(private readonly proyectoService: ProyectoService) { }
 
-  ) {}
-
-  @Post(':usuarioId')
+  // Crear nuevo proyecto
+  @Post()
   create(
-    @Param('usuarioId') usuarioId: number,
-    @Body() createProyectoDto: CreateProyectoDto) {
+    @GetUser('id') usuarioId: number,
+    @Body() createProyectoDto: CreateProyectoDto
+  ) {
     return this.proyectoService.create(createProyectoDto, usuarioId);
   }
 
+  // Obtener todos los proyectos
   @Get()
   findAll() {
     return this.proyectoService.findAll();
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.proyectoService.findOne(+id);
-  // }
+  // Obtener proyecto por ID
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.proyectoService.findOne(id);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateProyectoDto: UpdateProyectoDto) {
-  //   return this.proyectoService.update(+id, updateProyectoDto);
-  // }
+  // Obtener proyectos de un usuario específico
+  @Get('usuario/:usuarioId')
+  findByUsuario(@Param('usuarioId', ParseIntPipe) usuarioId: number) {
+    return this.proyectoService.findByUsuarioId(usuarioId);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.proyectoService.remove(+id);
-  // }
+  // Actualizar proyecto
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProyectoDto: UpdateProyectoDto,
+    @GetUser('id') usuarioId: number
+  ) {
+    return this.proyectoService.update(id, updateProyectoDto, usuarioId);
+  }
+
+  // Eliminar proyecto
+  @Delete(':id')
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser('id') usuarioId: number
+  ) {
+    return this.proyectoService.remove(id, usuarioId);
+  }
+
+
+  @Get('mis-proyectos/admin')
+  findProyectosAsAdmin(@GetUser('id') usuarioId: number) {
+    return this.proyectoService.findProyectosAsAdmin(usuarioId);
+  }
+
+  @Get('mis-proyectos/invitado')
+  findProyectosAsInvitado(@GetUser('id') usuarioId: number) {
+    return this.proyectoService.findProyectosAsInvitado(usuarioId);
+  }
+  
 }

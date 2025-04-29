@@ -10,6 +10,7 @@ export class UsuarioProyecto {
   @Column()
   rol: string;
 
+   // Relación con Usuario
   @ManyToOne(
     () => Usuario,
     usuario => usuario.usuarioProyectos,
@@ -17,6 +18,7 @@ export class UsuarioProyecto {
   )
   usuario: Usuario;
 
+  // Relación con Proyecto
   @ManyToOne(
     () => Proyecto,
     proyecto => proyecto.usuarioProyectos,

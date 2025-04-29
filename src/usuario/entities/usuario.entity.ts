@@ -17,6 +17,7 @@ export class Usuario{
     @Column()
     nombre:string;
 
+    // Relación con UsuarioProyecto
     @OneToMany( 
         ()=> UsuarioProyecto, 
         usuarioProyecto => usuarioProyecto.usuario
