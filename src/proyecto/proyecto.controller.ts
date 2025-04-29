@@ -67,5 +67,14 @@ export class ProyectoController {
   findProyectosAsInvitado(@GetUser('id') usuarioId: number) {
     return this.proyectoService.findProyectosAsInvitado(usuarioId);
   }
+
+  @Post(':id/invitar')
+  agregarInvitado(
+    @Param('id', ParseIntPipe) proyectoId: number,
+    @Body('invitadoId', ParseIntPipe) invitadoId: number,
+    @GetUser('id') adminId: number
+  ) {
+    return this.proyectoService.agregarInvitado(proyectoId, invitadoId, adminId);
+  }
   
 }

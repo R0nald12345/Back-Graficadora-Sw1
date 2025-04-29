@@ -134,4 +134,49 @@ export class ProyectoService {
         .andWhere('usuarioProyecto.rol = :rol', { rol: 'INVITADO' })
         .getMany();
     }
+
+
+      // Agregar un usuario invitado al proyecto
+  async agregarInvitado(proyectoId: number, invitadoId: number, adminId: number): Promise<{ message: string }> {
+    // 1. Verificar si existe el proyecto
+    const proyecto = await this.findOne(proyectoId);
+
+    // 2. Verificar si el usuario que hace la petición es ADMIN
+    const esAdmin = proyecto.usuarioProyectos.some(
+      up => up.usuario.id === adminId && up.rol === 'ADMIN'
+    );
+
+    if (!esAdmin) {
+      throw new UnauthorizedException('Solo el administrador puede agregar invitados');
+    }
+
+    // 3. Verificar si existe el usuario a invitar
+    const invitado = await this.usuarioRepository.findOneBy({ id: invitadoId });
+    if (!invitado) {
+      throw new NotFoundException(`Usuario invitado con ID ${invitadoId} no encontrado`);
+    }
+
+    // 4. Verificar si el usuario ya está en el proyecto
+    const yaExisteRelacion = await this.usuarioProyectoRepository.findOne({
+      where: {
+        usuario: { id: invitadoId },
+        proyecto: { id: proyectoId }
+      }
+    });
+
+    if (yaExisteRelacion) {
+      throw new UnauthorizedException('El usuario ya está asociado a este proyecto');
+    }
+
+    // 5. Crear la relación usuario-proyecto como INVITADO
+    await this.usuarioProyectoRepository.save({
+      usuario: invitado,
+      proyecto,
+      rol: 'INVITADO'
+    });
+
+    return {
+      message: `Usuario ${invitado.nombre} agregado como invitado al proyecto "${proyecto.nombre}"`
+    };
+  }
 }
